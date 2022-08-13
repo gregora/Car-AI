@@ -1,4 +1,5 @@
 #include "include/car.h"
+#define RAD2DEG 57.325
 
 int main(){
 
@@ -17,14 +18,35 @@ int main(){
 	sf::Clock clock;
 	float passed = 0;
 
+	uint frame = 0;
+
 	while (window.isOpen()){
 
-		c.applyAction("w");
-		c.applyAction("d");
+		frame++;
 
-		printf("%f %f\n", c.getPosition().x, c.getPosition().y);
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+			c.applyAction("w");
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+			c.applyAction("s");
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+			c.applyAction("a");
+		}
+
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+			c.applyAction("d");
+		}
+
+
 		c.setPosition(c.getPosition().x, -c.getPosition().y);
-		world.Step(1/60.0f, 2, 2);
+		c.setRotation(RAD2DEG * c.getAngle());
+
+		sf::Time delta = clock.restart();
+		float d = delta.asSeconds();
+		world.Step(d, 2, 2);
 
 		window.clear(sf::Color::Black);
 		window.draw(c);

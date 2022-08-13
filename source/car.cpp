@@ -44,21 +44,35 @@ void Car::applyAction(std::string action){
 
 	float angle = car -> GetAngle();
 
+	b2Vec2 currentRightNormal = b2Vec2(cos(getAngle()), -sin(getAngle()));
+	b2Vec2 lateralVel = b2Dot( currentRightNormal, car -> GetLinearVelocity() ) * currentRightNormal;
+	b2Vec2 forwardVel = car -> GetLinearVelocity() - lateralVel;
+
 	if(action == "w"){
-		car -> ApplyForceToCenter(b2Vec2(sin(angle) * 10, cos(angle) * 10), true);
+		car -> ApplyForceToCenter(b2Vec2(sin(angle) * power, cos(angle) * power), true);
 	}
 
 	if(action == "s"){
-		car -> ApplyForceToCenter(b2Vec2(-sin(angle) * 10, -cos(angle) * 10), true);
+		car -> ApplyForceToCenter(b2Vec2(-sin(angle) * power, -cos(angle) * power), true);
 	}
 
 	if(action == "a"){
-		car -> ApplyTorque(20, true);
+		car -> ApplyTorque(-forwardVel.Length() * turning, true);
 	}
 
 	if(action == "d"){
-		car -> ApplyTorque(20, true);
+		car -> ApplyTorque(forwardVel.Length() * turning, true);
 	}
+
+	b2Vec2 impulse = car -> GetMass() * -lateralVel;
+	float maxLateralImpulse = 0.15;
+
+
+	if (impulse.Length() > maxLateralImpulse){
+		impulse *= maxLateralImpulse / impulse.Length(); // drift
+	}
+
+	car->ApplyLinearImpulse(impulse, car->GetWorldCenter(), true);
 
 
 }
@@ -70,7 +84,6 @@ void Car::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 	car_body.setScale(0.004, 0.004);
 	car_body.setOrigin(250, 500);
-	car_body.setRotation(RAD2DEG * car -> GetAngle());
 
 	target.draw(car_body, states.transform*getTransform());
 }
