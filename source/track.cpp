@@ -112,8 +112,9 @@ void Track::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 			float angle = vector2angle(direction.x, -direction.y);
 
 			sf::RectangleShape rect;
-			rect.setSize(sf::Vector2f(width, 0.3));
-			rect.setOrigin(0, 0.3);
+			rect.setSize(sf::Vector2f(width, 1));
+			rect.setFillColor(sf::Color(100, 100, 100));
+			rect.setOrigin(0, 0.5);
 			rect.setPosition(edge.m_vertex1.x, - edge.m_vertex1.y);
 			rect.setRotation(angle * RAD2DEG);
 

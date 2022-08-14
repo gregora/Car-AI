@@ -108,7 +108,7 @@ void Car::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 	for(uint i = 0; i < rays.size(); i++){
 		sf::RectangleShape ray;
-		ray.setFillColor(sf::Color(100, 100, 100));
+		ray.setFillColor(sf::Color(50, 50, 50));
 		ray.setSize(sf::Vector2f(rays[i], 0.3));
 		ray.setOrigin(0, 0.15);
 

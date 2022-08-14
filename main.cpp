@@ -10,12 +10,11 @@ int main(){
 
 	b2World world(b2Vec2(0.0f, 0.0f));
 
-	Car c(&world, b2Vec2(90, 0));
+	Car c(&world, b2Vec2(-90, 0));
 
 	Track t(&world);
 	t.loadChain("tracks/track1-1.ch");
 	t.loadChain("tracks/track1-2.ch");
-	//t.loadChain("tracks/test.ch");
 
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
