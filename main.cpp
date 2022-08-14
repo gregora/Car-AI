@@ -1,6 +1,8 @@
 #include "include/car.h"
+#include "include/track.h"
 #include "include/gauge.h"
 #define RAD2DEG 57.325
+
 
 int main(){
 
@@ -11,7 +13,13 @@ int main(){
 
 	Car c(&world);
 
-	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Arm");
+	Track t(&world);
+	t.loadChain("tracks/track1-1.ch");
+	t.loadChain("tracks/track1-2.ch");
+
+	sf::ContextSettings settings;
+	settings.antialiasingLevel = 8;
+	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Car AI", sf::Style::Default, settings);
 	sf::View view(sf::Vector2f(0, 0), sf::Vector2f(WIDTH / 2, HEIGHT / 2));
 	view.zoom(0.3);
 	sf::View default_view = window.getView();
@@ -60,6 +68,7 @@ int main(){
 		world.Step(d, 2, 2);
 
 		window.clear(sf::Color::Black);
+		window.draw(t);
 		window.draw(c);
 
 		window.setView(default_view);

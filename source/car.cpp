@@ -78,7 +78,6 @@ void Car::applyLateralForces(){
 
 
 	if (impulse.Length() > maxLateralImpulse){
-		printf("Drifting\n");
 		impulse *= maxLateralImpulse / impulse.Length(); // drift
 	}
 
