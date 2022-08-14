@@ -44,7 +44,7 @@ void Car::applyAction(std::string action){
 
 	float angle = car -> GetAngle();
 
-	b2Vec2 currentRightNormal = b2Vec2(cos(getAngle()), -sin(getAngle()));
+	b2Vec2 currentRightNormal = b2Vec2(cos(angle), -sin(angle));
 	b2Vec2 lateralVel = b2Dot( currentRightNormal, car -> GetLinearVelocity() ) * currentRightNormal;
 	b2Vec2 forwardVel = car -> GetLinearVelocity() - lateralVel;
 
@@ -64,17 +64,25 @@ void Car::applyAction(std::string action){
 		car -> ApplyTorque(forwardVel.Length() * turning, true);
 	}
 
+}
+
+void Car::applyLateralForces(){
+	float angle = car -> GetAngle();
+
+	b2Vec2 currentRightNormal = b2Vec2(cos(getAngle()), -sin(getAngle()));
+	b2Vec2 lateralVel = b2Dot( currentRightNormal, car -> GetLinearVelocity() ) * currentRightNormal;
+	b2Vec2 forwardVel = car -> GetLinearVelocity() - lateralVel;
+
 	b2Vec2 impulse = car -> GetMass() * -lateralVel;
-	float maxLateralImpulse = 0.15;
+	float maxLateralImpulse = 0.5;
 
 
 	if (impulse.Length() > maxLateralImpulse){
+		printf("Drifting\n");
 		impulse *= maxLateralImpulse / impulse.Length(); // drift
 	}
 
 	car->ApplyLinearImpulse(impulse, car->GetWorldCenter(), true);
-
-
 }
 
 

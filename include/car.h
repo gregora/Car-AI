@@ -21,6 +21,7 @@ class Car : public sf::Drawable, public sf::Transformable {
 		float getSpeed();
 
 		void applyAction(std::string action);
+		void applyLateralForces();
 		void calculateLateralForces();
 
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
