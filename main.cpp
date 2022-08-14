@@ -11,17 +11,18 @@ int main(){
 
 	b2World world(b2Vec2(0.0f, 0.0f));
 
-	Car c(&world);
+	Car c(&world, b2Vec2(90, 0));
 
 	Track t(&world);
 	t.loadChain("tracks/track1-1.ch");
 	t.loadChain("tracks/track1-2.ch");
+	//t.loadChain("tracks/test.ch");
 
 	sf::ContextSettings settings;
 	settings.antialiasingLevel = 8;
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Car AI", sf::Style::Default, settings);
 	sf::View view(sf::Vector2f(0, 0), sf::Vector2f(WIDTH / 2, HEIGHT / 2));
-	view.zoom(0.3);
+	view.zoom(0.4);
 	sf::View default_view = window.getView();
 	window.setView(view);
 
@@ -59,13 +60,16 @@ int main(){
 
 
 		c.setPosition(c.getPosition().x, -c.getPosition().y);
-		c.setRotation(RAD2DEG * c.getAngle());
+		c.setRotation(- RAD2DEG * c.getAngle());
 
 		g.value = c.getSpeed() * 3.6;
 
 		sf::Time delta = clock.restart();
 		float d = delta.asSeconds();
 		world.Step(d, 2, 2);
+
+		view.setCenter(c.getPosition().x, -c.getPosition().y);
+		view.setRotation(- c.getAngle() * RAD2DEG);
 
 		window.clear(sf::Color::Black);
 		window.draw(t);

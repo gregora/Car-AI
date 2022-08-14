@@ -1,4 +1,5 @@
 #include "../include/track.h"
+#define RAD2DEG 57.325
 
 float vector2angle(float x, float y){
 
@@ -78,12 +79,13 @@ void Track::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 			float width = direction.Length();
 
-			float angle = vector2angle(direction.x, -direction.y) - 3.14/2;
+			float angle = vector2angle(direction.x, -direction.y);
 
 			sf::RectangleShape rect;
-			rect.setSize(sf::Vector2f(0.3, width));
+			rect.setSize(sf::Vector2f(width, 0.3));
+			rect.setOrigin(0, 0.3);
 			rect.setPosition(edge.m_vertex1.x, - edge.m_vertex1.y);
-			rect.setRotation(angle * 180 / 3.14);
+			rect.setRotation(angle * RAD2DEG);
 
 			target.draw(rect, states.transform*getTransform());
 		}

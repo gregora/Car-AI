@@ -44,24 +44,24 @@ void Car::applyAction(std::string action){
 
 	float angle = car -> GetAngle();
 
-	b2Vec2 currentRightNormal = b2Vec2(cos(angle), -sin(angle));
+	b2Vec2 currentRightNormal = b2Vec2(cos(-angle), -sin(-angle));
 	b2Vec2 lateralVel = b2Dot( currentRightNormal, car -> GetLinearVelocity() ) * currentRightNormal;
 	b2Vec2 forwardVel = car -> GetLinearVelocity() - lateralVel;
 
 	if(action == "w"){
-		car -> ApplyForceToCenter(b2Vec2(sin(angle) * power, cos(angle) * power), true);
+		car -> ApplyForceToCenter(b2Vec2(sin(-angle) * power, cos(-angle) * power), true);
 	}
 
 	if(action == "s"){
-		car -> ApplyForceToCenter(b2Vec2(-sin(angle) * power, -cos(angle) * power), true);
+		car -> ApplyForceToCenter(b2Vec2(-sin(-angle) * power, -cos(-angle) * power), true);
 	}
 
 	if(action == "a"){
-		car -> ApplyTorque(-forwardVel.Length() * turning, true);
+		car -> ApplyTorque(forwardVel.Length() * turning, true);
 	}
 
 	if(action == "d"){
-		car -> ApplyTorque(forwardVel.Length() * turning, true);
+		car -> ApplyTorque(-forwardVel.Length() * turning, true);
 	}
 
 }
@@ -69,7 +69,7 @@ void Car::applyAction(std::string action){
 void Car::applyLateralForces(){
 	float angle = car -> GetAngle();
 
-	b2Vec2 currentRightNormal = b2Vec2(cos(getAngle()), -sin(getAngle()));
+	b2Vec2 currentRightNormal = b2Vec2(cos(-getAngle()), -sin(-getAngle()));
 	b2Vec2 lateralVel = b2Dot( currentRightNormal, car -> GetLinearVelocity() ) * currentRightNormal;
 	b2Vec2 forwardVel = car -> GetLinearVelocity() - lateralVel;
 
@@ -89,8 +89,8 @@ void Car::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	sf::Sprite car_body;
 	car_body.setTexture(body);
 
-	car_body.setScale(0.004, 0.004);
 	car_body.setOrigin(250, 500);
+	car_body.setScale(0.004, 0.004);
 
 	target.draw(car_body, states.transform*getTransform());
 }
