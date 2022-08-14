@@ -17,6 +17,8 @@ class Track : public sf::Drawable, public sf::Transformable {
 
 		void loadChain(std::string path);
 
+		float raycast(b2Vec2 position, b2Vec2 direction);
+
 		void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 };

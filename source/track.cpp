@@ -58,6 +58,36 @@ void Track::loadChain(std::string path){
 }
 
 
+float Track::raycast(b2Vec2 position, b2Vec2 direction){
+	b2Fixture* f = body -> GetFixtureList();
+
+	float min = 1;
+
+	b2RayCastOutput out;
+	b2RayCastInput in;
+	in.p1 = position;
+	in.p2 = position + direction;
+	in.maxFraction = 1;
+
+	while(f != nullptr){
+
+		uint children = f -> GetShape() -> GetChildCount();
+
+		for(uint i = 0; i < children; i++){
+
+			bool result = ((b2ChainShape*)  (f -> GetShape())) -> RayCast(&out, in, body -> GetTransform(), i);
+			if(out.fraction < min && result){
+				min = out.fraction;
+			}
+		}
+
+		f = f -> GetNext();
+	}
+
+	return min;
+}
+
+
 void Track::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 	b2Fixture* f = body -> GetFixtureList();

@@ -1,5 +1,4 @@
 #include "include/car.h"
-#include "include/track.h"
 #include "include/gauge.h"
 #define RAD2DEG 57.325
 
@@ -33,7 +32,7 @@ int main(){
 
 	Gauge g("Speed", 0, 150);
 	g.unit = "km/h";
-	g.setPosition(WIDTH / 2 - 50, HEIGHT - 100);
+	g.setPosition(WIDTH - 150, HEIGHT - 100);
 	g.setScale(0.2, 0.2);
 
 	while (window.isOpen()){
@@ -61,6 +60,7 @@ int main(){
 
 		c.setPosition(c.getPosition().x, -c.getPosition().y);
 		c.setRotation(- RAD2DEG * c.getAngle());
+		c.castRays(t, 30, 100);
 
 		g.value = c.getSpeed() * 3.6;
 
@@ -69,7 +69,7 @@ int main(){
 		world.Step(d, 2, 2);
 
 		view.setCenter(c.getPosition().x, -c.getPosition().y);
-		view.setRotation(- c.getAngle() * RAD2DEG);
+		//view.setRotation(- c.getAngle() * RAD2DEG);
 
 		window.clear(sf::Color::Black);
 		window.draw(t);

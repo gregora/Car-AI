@@ -28,15 +28,15 @@ Car::Car(b2World* world, b2Vec2 position){
 
 }
 
-b2Vec2 Car::getPosition(){
+b2Vec2 Car::getPosition() const{
 	return car -> GetPosition();
 }
 
-float Car::getAngle(){
+float Car::getAngle() const{
 	return car -> GetAngle();
 }
 
-float Car::getSpeed(){
+float Car::getSpeed() const{
 	return car -> GetLinearVelocity().Length();
 }
 
@@ -84,6 +84,18 @@ void Car::applyLateralForces(){
 	car->ApplyLinearImpulse(impulse, car->GetWorldCenter(), true);
 }
 
+void Car::castRays(Track track, uint number, float length){
+
+	rays.resize(number);
+
+	float ang_fract = 2*3.14 / number;
+
+	for(uint i = 0; i < number; i++){
+		rays[i] = length * track.raycast(getPosition(), length * b2Vec2(sin(- getAngle() - i*ang_fract), cos(- getAngle() - i*ang_fract)));
+	}
+
+}
+
 
 void Car::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	sf::Sprite car_body;
@@ -91,6 +103,20 @@ void Car::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 	car_body.setOrigin(250, 500);
 	car_body.setScale(0.004, 0.004);
+
+	float ang_fract = 2*3.14 / rays.size();
+
+	for(uint i = 0; i < rays.size(); i++){
+		sf::RectangleShape ray;
+		ray.setFillColor(sf::Color(100, 100, 100));
+		ray.setSize(sf::Vector2f(rays[i], 0.3));
+		ray.setOrigin(0, 0.15);
+
+		ray.setRotation(-(i*ang_fract + 1.57) * 180 / 3.14);
+		target.draw(ray, states.transform*getTransform());
+
+	}
+
 
 	target.draw(car_body, states.transform*getTransform());
 }

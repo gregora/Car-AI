@@ -48,6 +48,13 @@ void Gauge::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	float nt_width = name_text.getLocalBounds().width;
 	name_text.setPosition((500 - nt_width) / 2, 280);
 
+	sf::CircleShape background;
+	background.setFillColor(sf::Color(0, 0, 0, 200));
+	background.setOrigin(300, 300);
+	background.setRadius(300);
+	background.setPosition(250, 250);
+
+	target.draw(background, states.transform*getTransform());
 	target.draw(sprite, states.transform*getTransform());
 	target.draw(pointer, states.transform*getTransform());
 	target.draw(text, states.transform*getTransform());
