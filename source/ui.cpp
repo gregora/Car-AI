@@ -99,3 +99,36 @@ void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	target.draw(text, states.transform*getTransform());
 
 }
+
+FPS::FPS(){
+	c.restart();
+
+	if(!font.loadFromFile("fonts/Prototype.ttf")){
+		printf("WARNING: FPS object could not load \"fonts/Prototype.ttf\"");
+	}
+
+}
+
+void FPS::update(){
+
+	current_frame++;
+
+	if(current_frame >= frame_average){
+		fps = (uint) 1 / c.getElapsedTime().asSeconds() * current_frame;
+		c.restart();
+		current_frame = 0;
+	}
+
+}
+
+void FPS::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+
+	sf::Text text;
+	text.setFont(font);
+	text.setCharacterSize(45);
+	text.setString(std::to_string(fps) + " FPS");
+	text.setFillColor(sf::Color::White);
+
+	target.draw(text, states.transform*getTransform());
+
+}

@@ -38,3 +38,21 @@ private:
 	char key;
 
 };
+
+class FPS : public sf::Drawable, public sf::Transformable {
+
+public:
+	FPS();
+	sf::Clock c;
+	uint fps = 0;
+	uint frame_average = 1;
+
+	void update();
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
+private:
+	sf::Font font;
+
+	uint current_frame = 0;
+
+};

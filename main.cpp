@@ -50,6 +50,11 @@ int main(){
 	b4.setScale(0.5, 0.5);
 	b4.setPosition(WIDTH - 240, HEIGHT - 50);
 
+	FPS fps;
+	fps.setPosition(WIDTH - 100, 20);
+	fps.setScale(0.5, 0.5);
+	fps.frame_average = 60;
+
 	while (window.isOpen()){
 
 		frame++;
@@ -105,6 +110,9 @@ int main(){
 		window.draw(b2);
 		window.draw(b3);
 		window.draw(b4);
+
+		fps.update();
+		window.draw(fps);
 		window.setView(view);
 
 		window.display();
