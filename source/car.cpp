@@ -1,6 +1,6 @@
 #include "../include/car.h"
 
-#define RAD2DEG 57.325
+#define RAD2DEG 57.2957795131
 
 Car::Car(b2World* world, b2Vec2 position){
 
@@ -100,21 +100,28 @@ void Car::castRays(Track track, uint number, float length){
 void Car::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 	sf::Sprite car_body;
 	car_body.setTexture(body);
+	car_body.setColor(sf::Color(255, 255, 255, opacity));
 
 	car_body.setOrigin(250, 500);
 	car_body.setScale(0.004, 0.004);
 
-	float ang_fract = 2*3.14 / rays.size();
+	if(render_rays){
+		float ang_fract = 2*3.14 / rays.size();
 
-	for(uint i = 0; i < rays.size(); i++){
-		sf::RectangleShape ray;
-		ray.setFillColor(sf::Color(50, 50, 50));
-		ray.setSize(sf::Vector2f(rays[i], 0.3));
-		ray.setOrigin(0, 0.15);
+		for(uint i = 0; i < rays.size(); i++){
 
-		ray.setRotation(-(i*ang_fract + 1.57) * 180 / 3.14);
-		target.draw(ray, states.transform*getTransform());
+			float ray_ang = -(i*ang_fract + 1.57) * 180 / 3.14;
 
+			sf::RectangleShape ray;
+			ray.setFillColor(sf::Color(50, 50, 50, opacity));
+			ray.setSize(sf::Vector2f(rays[i], 0.3));
+			ray.setOrigin(0, 0.15);
+
+			ray.setRotation(ray_ang);
+
+
+			target.draw(ray, states.transform*getTransform());
+		}
 	}
 
 

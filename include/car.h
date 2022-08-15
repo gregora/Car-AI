@@ -18,6 +18,9 @@ class Car : public sf::Drawable, public sf::Transformable {
 		float power = 150;
 		float turning = 40;
 
+		uint opacity = 255;
+		float render_rays = false;
+
 		Car(b2World* world, b2Vec2 position = b2Vec2(0.0f, 0.0f));
 
 		b2Vec2 getPosition() const;

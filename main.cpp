@@ -20,7 +20,7 @@ int main(){
 	settings.antialiasingLevel = 8;
 	sf::RenderWindow window(sf::VideoMode(WIDTH, HEIGHT), "Car AI", sf::Style::Default, settings);
 	sf::View view(sf::Vector2f(0, 0), sf::Vector2f(WIDTH / 2, HEIGHT / 2));
-	view.zoom(0.4);
+	view.zoom(0.2);
 	sf::View default_view = window.getView();
 	window.setView(view);
 
