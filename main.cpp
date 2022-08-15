@@ -1,5 +1,5 @@
 #include "include/car.h"
-#include "include/gauge.h"
+#include "include/ui.h"
 #define RAD2DEG 57.325
 
 
@@ -31,27 +31,52 @@ int main(){
 
 	Gauge g("Speed", 0, 150);
 	g.unit = "km/h";
-	g.setPosition(WIDTH - 150, HEIGHT - 100);
+	g.setPosition(WIDTH - 150, HEIGHT - 110);
 	g.setScale(0.2, 0.2);
+
+	Button b1('W');
+	b1.setScale(0.5, 0.5);
+	b1.setPosition(WIDTH - 300, HEIGHT - 110);
+
+	Button b2('A');
+	b2.setScale(0.5, 0.5);
+	b2.setPosition(WIDTH - 360, HEIGHT - 50);
+
+	Button b3('S');
+	b3.setScale(0.5, 0.5);
+	b3.setPosition(WIDTH - 300, HEIGHT - 50);
+
+	Button b4('D');
+	b4.setScale(0.5, 0.5);
+	b4.setPosition(WIDTH - 240, HEIGHT - 50);
 
 	while (window.isOpen()){
 
 		frame++;
 
+		b1.active = false;
+		b2.active = false;
+		b3.active = false;
+		b4.active = false;
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 			c.applyAction("w");
+			b1.active = true;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
 			c.applyAction("s");
+			b3.active = true;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
 			c.applyAction("a");
+			b2.active = true;
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
 			c.applyAction("d");
+			b4.active = true;
 		}
 
 		c.applyLateralForces();
@@ -76,6 +101,10 @@ int main(){
 
 		window.setView(default_view);
 		window.draw(g);
+		window.draw(b1);
+		window.draw(b2);
+		window.draw(b3);
+		window.draw(b4);
 		window.setView(view);
 
 		window.display();

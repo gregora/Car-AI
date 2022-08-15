@@ -23,3 +23,18 @@ private:
 
 	sf::Font font;
 };
+
+
+class Button : public sf::Drawable, public sf::Transformable {
+
+public:
+	Button(char key);
+	float active = false;
+
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
+private:
+	sf::Font font;
+	char key;
+
+};
