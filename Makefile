@@ -1,5 +1,5 @@
 main.out: main.o lib/libcar.a include/car.h ui.o include/ui.h track.o include/track.h
-	g++ main.o ui.o track.o -o main.out -Llib/ -lcar -lbox2d -lsfml-graphics -lsfml-window -lsfml-system
+	g++ main.o ui.o track.o -o main.out -Llib/ -lcar -lnn -lbox2d -lsfml-graphics -lsfml-window -lsfml-system -pthread
 
 main.o: main.cpp include/car.h
 	g++ -c main.cpp
