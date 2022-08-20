@@ -1,8 +1,7 @@
 #include "qlearn.cpp"
 #include "genetic.cpp"
 
-int main(){
-
+int main(uint argc, char** args){
 
 	/*
 	Network network;
@@ -24,6 +23,8 @@ int main(){
 	uint population = 100;
 	Network* networks[population];
 
+	bool train = true;
+
 	for(uint i = 0; i < population; i++){
 
 		networks[i] = new Network();
@@ -39,6 +40,14 @@ int main(){
 		networks[i] -> addLayer(layer1);
 		networks[i] -> addLayer(layer2);
 		networks[i] -> addLayer(layer3);
+	}
+
+	for(int i = 0; i < argc; i++){
+		if(strcmp(args[i], "-load") == 0){
+			load_population(networks, population, string("networks/Generation")+args[i + 1] + "/");
+		}else if(strcmp(args[i], "-display") == 0){
+			train = false;
+		}
 	}
 
 	gen_settings settings = {
@@ -63,6 +72,10 @@ int main(){
 		output: true
 	};
 
-	genetic(networks, evaluate, settings);
+	if(train){
+		genetic(networks, evaluate, settings);
+	}else{
+		render(population, networks);
+	}
 
 }

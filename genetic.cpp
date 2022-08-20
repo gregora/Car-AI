@@ -4,8 +4,83 @@
 using namespace nnlib;
 using namespace std;
 
+void evaluate(Network* network, float* score){
+	b2World world(b2Vec2(0.0f, 0.0f));
 
-void evaluate(uint population, Network** networks, float* scores){
+
+	Track t(&world);
+	t.loadChain("tracks/track1-1.ch");
+	t.loadChain("tracks/track1-2.ch");
+
+	PhysicsCar c(&world, b2Vec2(-90, 0));
+
+	float time = 0;
+	while (time <= 20){
+
+		float delta = 1.0f/60;
+		time += delta;
+		float reward = 0;
+
+		c.castRays(t, RAYS, 100);
+
+		Matrix input(1, RAYS);
+
+		for(uint j = 0; j < c.rays.size(); j++){
+			input.set(0, j, c.rays[j]);
+		}
+
+		Matrix output = network -> eval(input);
+
+		uint ind = 0;
+		ind = action_max(output);
+
+		if(ind == 0){
+			c.applyAction("w");
+		}
+
+		if(ind == 1){
+			c.applyAction("a");
+		}
+
+		if(ind == 2){
+			c.applyAction("s");
+		}
+
+		if(ind == 3){
+			c.applyAction("d");
+		}
+
+		///check collisions
+		bool collision = false;
+		b2ContactEdge* ce = c.car -> GetContactList();
+
+		while(ce != NULL)
+		{
+			 if (ce -> contact -> IsTouching())
+			 {
+				 collision = true;
+				 break;
+			 }
+			 ce = ce -> next;
+		}
+
+		if(collision){
+			return;
+			reward -= 50.0f / 60;
+		}
+
+
+		reward += c.getForwardSpeed() / 60;
+
+		c.applyLateralForces();
+
+		*score -= reward;
+
+		world.Step(1/60.0f, 2, 2);
+	}
+}
+
+void render(uint population, Network** networks){
 
 		int WIDTH = 800;
 		int HEIGHT = 600;
@@ -141,20 +216,11 @@ void evaluate(uint population, Network** networks, float* scores){
 					 ce = ce -> next;
 				}
 
-				if(collision){
-					reward -= 50.0f / 60;
-				}
-
-
-				reward += cars[i].getForwardSpeed() / 60;
-
 				cars[i].applyLateralForces();
 
 
 				cars[i].setPosition(cars[i].getLocation().x, -cars[i].getLocation().y);
 				cars[i].setRotation(- RAD2DEG * cars[i].getAngle());
-
-				scores[i] -= reward;
 
 				worlds[i] -> Step(1/60.0f, 2, 2);
 			}
