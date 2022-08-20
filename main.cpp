@@ -20,7 +20,10 @@ int main(uint argc, char** args){
 
 	//qlearn(&network);
 
+	bool multithreading = false;
 	uint population = 100;
+	uint start_generation = 0;
+	uint generations = 100;
 	Network* networks[population];
 
 	bool train = true;
@@ -45,15 +48,22 @@ int main(uint argc, char** args){
 	for(int i = 0; i < argc; i++){
 		if(strcmp(args[i], "-load") == 0){
 			load_population(networks, population, string("networks/Generation")+args[i + 1] + "/");
+			start_generation = atoi(args[i + 1]);
 		}else if(strcmp(args[i], "-display") == 0){
 			train = false;
+		}else if(strcmp(args[i], "-multithreading") == 0){
+			multithreading = true;
+		}else if(strcmp(args[i], "-population") == 0){
+			population = atoi(args[i + 1]);
+		}else if(strcmp(args[i], "-generations") == 0){
+			generations = atoi(args[i + 1]);
 		}
 	}
 
 	gen_settings settings = {
 		//general settings
 		population: population,
-		generations: 100, //number of generations to run
+		generations: generations, //number of generations to run
 		mutation_rate: 0.1, //number of mutations on each child
 
 		rep_coef: 0.1, //percent of population to reproduce
@@ -61,12 +71,12 @@ int main(uint argc, char** args){
 		delta: 0.2, //maximum weight/bias change for mutations
 		recompute_parents: false, //recompute parents (for non-deterministic evaluation functions)
 
-		multithreading: false,
+		multithreading: multithreading,
 
 		//file saving settings
 		save_period: 10, //how often networks are saved (0 == never)
 		path: "./networks/", //empty folder for saving
-		start_generation: 1, //affects save files
+		start_generation: start_generation, //affects save files
 
 		//output settings
 		output: true
