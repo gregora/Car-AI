@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# Saved networks
+networks/*.AI
+networks/*/*.AI

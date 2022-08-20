@@ -1,7 +1,7 @@
 main.out: main.o lib/libcar.a include/car.h ui.o include/ui.h track.o include/track.h
-	g++ main.o ui.o track.o -o main.out -Llib/ -lcar -lnn -lbox2d -lsfml-graphics -lsfml-window -lsfml-system -pthread
+	g++ main.o ui.o track.o  -o main.out -Llib/ -lcar -lnn -lbox2d -lsfml-graphics -lsfml-window -lsfml-system -pthread
 
-main.o: main.cpp include/car.h
+main.o: main.cpp include/car.h genetic.cpp qlearn.cpp
 	g++ -c main.cpp
 
 lib/libcar.a: car.o

@@ -2,10 +2,11 @@
 
 #define RAD2DEG 57.2957795131
 
-Car::Car(b2World* world, b2Vec2 position){
+PhysicsCar::PhysicsCar(){
 
-	this -> world = world;
-	body.loadFromFile("textures/car.png");
+}
+
+PhysicsCar::PhysicsCar(b2World* world, b2Vec2 position){
 
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -28,19 +29,26 @@ Car::Car(b2World* world, b2Vec2 position){
 
 }
 
-b2Vec2 Car::getPosition() const{
+Car::Car(){}
+
+Car::Car(b2World* world, b2Vec2 position) : PhysicsCar(world, position){
+	this -> world = world;
+	body.loadFromFile("textures/car.png");
+}
+
+b2Vec2 PhysicsCar::getLocation() const{
 	return car -> GetPosition();
 }
 
-float Car::getAngle() const{
+float PhysicsCar::getAngle() const{
 	return car -> GetAngle();
 }
 
-float Car::getSpeed() const{
+float PhysicsCar::getSpeed() const{
 	return car -> GetLinearVelocity().Length();
 }
 
-void Car::applyAction(std::string action){
+void PhysicsCar::applyAction(std::string action){
 
 	float angle = car -> GetAngle();
 
@@ -66,7 +74,7 @@ void Car::applyAction(std::string action){
 
 }
 
-void Car::applyLateralForces(){
+void PhysicsCar::applyLateralForces(){
 	float angle = car -> GetAngle();
 
 	b2Vec2 currentRightNormal = b2Vec2(cos(-getAngle()), -sin(-getAngle()));
@@ -84,14 +92,30 @@ void Car::applyLateralForces(){
 	car->ApplyLinearImpulse(impulse, car->GetWorldCenter(), true);
 }
 
-void Car::castRays(Track track, uint number, float length){
+float PhysicsCar::getForwardSpeed(){
+	b2Vec2 currentRightNormal = b2Vec2(cos(-getAngle()), -sin(-getAngle()));
+	b2Vec2 lateralVel = b2Dot( currentRightNormal, car -> GetLinearVelocity() ) * currentRightNormal;
+	b2Vec2 forwardVel = car -> GetLinearVelocity() - lateralVel;
+
+	b2Vec2 currentNormal = b2Vec2(sin(-getAngle()), cos(-getAngle()));
+
+
+	//printf("%2.10f\n", (b2Dot(forwardVel, currentNormal)));
+
+	return b2Dot(forwardVel, currentNormal);
+
+}
+
+
+
+void PhysicsCar::castRays(Track track, uint number, float length){
 
 	rays.resize(number);
 
 	float ang_fract = 2*3.14 / number;
 
 	for(uint i = 0; i < number; i++){
-		rays[i] = length * track.raycast(getPosition(), length * b2Vec2(sin(- getAngle() - i*ang_fract), cos(- getAngle() - i*ang_fract)));
+		rays[i] = length * track.raycast(getLocation(), length * b2Vec2(sin(- getAngle() - i*ang_fract), cos(- getAngle() - i*ang_fract)));
 	}
 
 }
