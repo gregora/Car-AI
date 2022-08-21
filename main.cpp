@@ -24,9 +24,24 @@ int main(uint argc, char** args){
 	uint population = 100;
 	uint start_generation = 0;
 	uint generations = 100;
+	bool train = true;
+
+	for(int i = 0; i < argc; i++){
+		if(strcmp(args[i], "-load") == 0){
+			start_generation = atoi(args[i + 1]);
+		}else if(strcmp(args[i], "-display") == 0){
+			train = false;
+		}else if(strcmp(args[i], "-multithreading") == 0){
+			multithreading = true;
+		}else if(strcmp(args[i], "-population") == 0){
+			population = atoi(args[i + 1]);
+		}else if(strcmp(args[i], "-generations") == 0){
+			generations = atoi(args[i + 1]);
+		}
+	}
+
 	Network* networks[population];
 
-	bool train = true;
 
 	for(uint i = 0; i < population; i++){
 
@@ -45,19 +60,8 @@ int main(uint argc, char** args){
 		networks[i] -> addLayer(layer3);
 	}
 
-	for(int i = 0; i < argc; i++){
-		if(strcmp(args[i], "-load") == 0){
-			load_population(networks, population, string("networks/Generation")+args[i + 1] + "/");
-			start_generation = atoi(args[i + 1]);
-		}else if(strcmp(args[i], "-display") == 0){
-			train = false;
-		}else if(strcmp(args[i], "-multithreading") == 0){
-			multithreading = true;
-		}else if(strcmp(args[i], "-population") == 0){
-			population = atoi(args[i + 1]);
-		}else if(strcmp(args[i], "-generations") == 0){
-			generations = atoi(args[i + 1]);
-		}
+	if(start_generation != 0){
+		load_population(networks, population, string("networks/Generation") + to_string(start_generation) + "/");
 	}
 
 	gen_settings settings = {
