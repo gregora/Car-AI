@@ -334,3 +334,21 @@ void qlearn(Network* network){
 	}
 
 }
+
+int main(){
+
+		Network network;
+		Dense* layer1 = new Dense(RAYS, 30);
+		Dense* layer2 = new Dense(30, 4);
+		Dense* layer3 = new Dense(4, 4);
+
+		layer1 -> setActivationFunction("relu");
+		layer2 -> setActivationFunction("relu");
+		layer3 -> setActivationFunction("softmax");
+
+		network.addLayer(layer1);
+		network.addLayer(layer2);
+		network.addLayer(layer3);
+
+		qlearn(&network);
+}

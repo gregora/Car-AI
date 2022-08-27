@@ -1,8 +1,55 @@
+#include "include/car.h"
+#include "include/ui.h"
+#include "include/algorithms.h"
+
 #define RAD2DEG 57.325
 #define RAYS 20
 
+
 using namespace nnlib;
 using namespace std;
+
+uint action(Matrix& matrix){
+
+	float explore = nnlib::random();
+	if(explore >= 0.0){
+		return nnlib::random(0, matrix.height - 1);
+	}
+
+
+	float rand = nnlib::random();
+
+	for(uint i = 0; i < matrix.height; i++){
+		float value = matrix.get(0, i);
+
+		rand -= value;
+
+		if(rand <= 0){
+			return i;
+		}
+	}
+
+
+
+	return - 1;
+
+}
+
+uint action_max(Matrix& matrix){
+
+	float max = 0;
+	uint index = -1;
+
+	for(uint i = 0; i < matrix.height; i++){
+		if(matrix.get(0, i) > max){
+			max = matrix.get(0, i);
+			index = i;
+		}
+	}
+
+	return index;
+}
+
 
 void evaluate(Network* network, float* score){
 	b2World world(b2Vec2(0.0f, 0.0f));
@@ -277,4 +324,86 @@ void render(uint population, Network** networks){
 			}
 
 		}
+}
+
+
+
+
+
+
+int main(uint argc, char** args){
+
+
+	bool multithreading = false;
+	uint population = 100;
+	uint start_generation = 0;
+	uint generations = 100;
+	bool train = true;
+
+	for(int i = 0; i < argc; i++){
+		if(strcmp(args[i], "-load") == 0){
+			start_generation = atoi(args[i + 1]);
+		}else if(strcmp(args[i], "-display") == 0){
+			train = false;
+		}else if(strcmp(args[i], "-multithreading") == 0){
+			multithreading = true;
+		}else if(strcmp(args[i], "-population") == 0){
+			population = atoi(args[i + 1]);
+		}else if(strcmp(args[i], "-generations") == 0){
+			generations = atoi(args[i + 1]);
+		}
+	}
+
+	Network* networks[population];
+
+
+	for(uint i = 0; i < population; i++){
+
+		networks[i] = new Network();
+
+		Dense* layer1 = new Dense(RAYS, 100);
+		Dense* layer2 = new Dense(100, 30);
+		Dense* layer3 = new Dense(30, 4);
+
+		layer1 -> setActivationFunction("relu");
+		layer2 -> setActivationFunction("relu");
+		layer3 -> setActivationFunction("softmax");
+
+		networks[i] -> addLayer(layer1);
+		networks[i] -> addLayer(layer2);
+		networks[i] -> addLayer(layer3);
+	}
+
+	if(start_generation != 0){
+		load_population(networks, population, string("networks/Generation") + to_string(start_generation) + "/");
+	}
+
+	gen_settings settings = {
+		//general settings
+		population: population,
+		generations: generations, //number of generations to run
+		mutation_rate: 0.1, //number of mutations on each child
+
+		rep_coef: 0.1, //percent of population to reproduce
+
+		delta: 0.2, //maximum weight/bias change for mutations
+		recompute_parents: false, //recompute parents (for non-deterministic evaluation functions)
+
+		multithreading: multithreading,
+
+		//file saving settings
+		save_period: 10, //how often networks are saved (0 == never)
+		path: "./networks/", //empty folder for saving
+		start_generation: start_generation, //affects save files
+
+		//output settings
+		output: true
+	};
+
+	if(train){
+		genetic(networks, evaluate, settings);
+	}else{
+		render(population, networks);
+	}
+
 }
