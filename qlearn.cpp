@@ -2,7 +2,7 @@
 #include "include/ui.h"
 #include "include/algorithms.h"
 
-#define RAD2DEG 57.325
+#define RAD2DEG 57.29577951308232
 #define RAYS 20
 
 using namespace nnlib;

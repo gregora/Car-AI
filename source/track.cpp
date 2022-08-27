@@ -1,5 +1,5 @@
 #include "../include/track.h"
-#define RAD2DEG 57.325
+#define RAD2DEG 57.29577951308232
 
 float vector2angle(float x, float y){
 

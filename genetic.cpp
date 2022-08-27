@@ -2,9 +2,13 @@
 #include "include/ui.h"
 #include "include/algorithms.h"
 
-#define RAD2DEG 57.325
+#define RAD2DEG 57.29577951308232
 #define RAYS 20
 
+char track_inner[] = "tracks/oval-inner.ch";
+char track_outer[] = "tracks/oval-outer.ch";
+
+b2Vec2 start_position(240, 0);
 
 using namespace nnlib;
 using namespace std;
@@ -56,10 +60,10 @@ void evaluate(Network* network, float* score){
 
 
 	Track t(&world);
-	t.loadChain("tracks/track1-1.ch");
-	t.loadChain("tracks/track1-2.ch");
+	t.loadChain(track_inner);
+	t.loadChain(track_outer);
 
-	PhysicsCar c(&world, b2Vec2(-90, 0));
+	PhysicsCar c(&world, start_position);
 
 	float time = 0;
 	while (time <= 20){
@@ -135,24 +139,23 @@ void render(uint population, Network** networks){
 		b2World* worlds[population];
 		Track* tracks[population];
 
-
 		for(uint i = 0; i < population; i++){
 			worlds[i] = new b2World(b2Vec2(0.0f, 0.0f));
 			tracks[i] = new Track(worlds[i]);
-			tracks[i] -> loadChain("tracks/track1-1.ch");
-			tracks[i] -> loadChain("tracks/track1-2.ch");
+			tracks[i] -> loadChain(track_outer);
+			tracks[i] -> loadChain(track_inner);
 
 		}
 
 		Track t(worlds[0]);
-		t.loadChain("tracks/track1-1.ch");
-		t.loadChain("tracks/track1-2.ch");
+		t.loadChain(track_outer);
+		t.loadChain(track_inner);
 
 
 		Car cars[population];
 
 		for(uint i = 0; i < population; i++){
-			cars[i] = Car(worlds[i], b2Vec2(-90, 0));
+			cars[i] = Car(worlds[i], start_position);
 			if(i != 0){
 				cars[i].opacity = 100;
 			}else{

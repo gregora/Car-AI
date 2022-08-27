@@ -1,6 +1,6 @@
 #include "../include/car.h"
 
-#define RAD2DEG 57.2957795131
+#define RAD2DEG 57.29577951308232
 
 PhysicsCar::PhysicsCar(){
 
