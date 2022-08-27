@@ -47,9 +47,9 @@ int main(uint argc, char** args){
 
 		networks[i] = new Network();
 
-		Dense* layer1 = new Dense(RAYS, 30);
-		Dense* layer2 = new Dense(30, 4);
-		Dense* layer3 = new Dense(4, 4);
+		Dense* layer1 = new Dense(RAYS, 100);
+		Dense* layer2 = new Dense(100, 30);
+		Dense* layer3 = new Dense(30, 4);
 
 		layer1 -> setActivationFunction("relu");
 		layer2 -> setActivationFunction("relu");
