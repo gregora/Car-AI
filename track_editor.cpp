@@ -6,7 +6,7 @@
 using namespace std;
 using namespace sf;
 
-float detection_radius = 0.5;
+float detection_radius = 1;
 
 void save(b2Vec2* points, int edges, const char* path);
 
@@ -34,7 +34,7 @@ int main(int argc, char** args){
 
 	for(int i = 0; i < edges; i++){
 		points_inner[i] = b2Vec2(20 * sin(2*3.14 * i / edges), 20 * cos(2*3.14 * i / edges));
-		points_outer[i] = b2Vec2(30 * sin(2*3.14 * i / edges), 30 * cos(2*3.14 * i / edges));
+		points_outer[i] = b2Vec2(30 * sin(- 2*3.14 * i / edges), 30 * cos(- 2*3.14 * i / edges));
 	}
 
 
@@ -45,6 +45,7 @@ int main(int argc, char** args){
 	view.zoom(0.2);
 	sf::View default_view = window.getView();
 	window.setView(view);
+	window.setFramerateLimit(60);
 
 
 	CircleShape node;
@@ -54,13 +55,15 @@ int main(int argc, char** args){
 
 	int dragged_index = -1;
 
+	Vector2f camera_position(0.0f, 0.0f);
+
 	while (window.isOpen()){
 
 		if(Mouse::isButtonPressed(Mouse::Button::Left)){
 			Vector2i click_i = Mouse::getPosition(window);
 
-			float x = ((float) click_i.x - WIDTH / 2) * 0.2 / 2;
-			float y = -((float) click_i.y - HEIGHT / 2) * 0.2 / 2;
+			float x = ((float) click_i.x - WIDTH / 2) * 0.2 / 2 + camera_position.x;
+			float y = -((float) click_i.y - HEIGHT / 2) * 0.2 / 2 - camera_position.y;
 
 			b2Vec2 click(x, y);
 
@@ -73,15 +76,15 @@ int main(int argc, char** args){
 
 			for(int i = 0; i < edges; i++){
 				if((click - points_outer[i]).Length() <= detection_radius){
-					dragged_index = i + 10;
+					dragged_index = i + edges;
 				}
 			}
 
 			if(dragged_index != -1){
-				if(dragged_index / edges == 0){
+				if(dragged_index < edges){
 					points_inner[dragged_index] = click;
 				}else{
-					points_outer[dragged_index - 10] = click;
+					points_outer[dragged_index - edges] = click;
 				}
 			}
 
@@ -95,6 +98,23 @@ int main(int argc, char** args){
 		track.setChain(points_inner, edges);
 		track.setChain(points_outer, edges);
 
+
+		float movement_speed = 0.4;
+		if(Keyboard::isKeyPressed(Keyboard::Up)){
+			camera_position.y -= movement_speed;
+		}
+		if(Keyboard::isKeyPressed(Keyboard::Down)){
+			camera_position.y += movement_speed;
+		}
+		if(Keyboard::isKeyPressed(Keyboard::Left)){
+			camera_position.x -= movement_speed;
+		}
+		if(Keyboard::isKeyPressed(Keyboard::Right)){
+			camera_position.x += movement_speed;
+		}
+
+		view.setCenter(camera_position);
+		window.setView(view);
 
 		window.clear(sf::Color::Black);
 		window.draw(track);
@@ -134,7 +154,7 @@ void save(b2Vec2* points, int edges, const char* path) {
 
 	for(int i = 0; i < edges; i++){
 		file << points[i].x;
-		file << " ";
+		file << ", ";
 		file << points[i].y;
 		file << "\n";
 	}

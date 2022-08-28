@@ -9,9 +9,13 @@
 //char track_outer[] = "tracks/oval-outer.ch";
 //b2Vec2 start_position(240, 0);
 
-char track_inner[] = "tracks/track1-1.ch";
-char track_outer[] = "tracks/track1-2.ch";
-b2Vec2 start_position(-90, 0);
+//char track_inner[] = "tracks/track1-1.ch";
+//char track_outer[] = "tracks/track1-2.ch";
+//b2Vec2 start_position(-90, 0);
+
+char track_inner[] = "tracks/handmade-inner.ch";
+char track_outer[] = "tracks/handmade-outer.ch";
+b2Vec2 start_position(-25, 0);
 
 
 using namespace nnlib;
