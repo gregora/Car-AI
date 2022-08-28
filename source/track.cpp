@@ -37,7 +37,7 @@ void Track::loadChain(std::string path){
 		printf("Unable to open file\n");
 	}
 
-	b2Vec2 * box = new b2Vec2[edges];
+	b2Vec2 box[edges];
 	std::ifstream myfile2(path);
 	int i = 0;
 	while (std::getline (myfile2,line)){
@@ -55,6 +55,28 @@ void Track::loadChain(std::string path){
 
 	body -> CreateFixture(&chain, 1);
 
+}
+
+
+void Track::setChain(b2Vec2* points, int edges){
+	b2ChainShape chain;
+	chain.CreateLoop(points, edges);
+
+	body -> CreateFixture(&chain, 1);
+
+}
+
+void Track::deleteChains(){
+
+	b2Fixture* f = body -> GetFixtureList();
+
+	while(f != nullptr){
+
+		b2Fixture* next = f -> GetNext();
+		body -> DestroyFixture(f);
+		f = next;
+
+	}
 }
 
 

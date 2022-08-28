@@ -5,10 +5,14 @@
 #define RAD2DEG 57.29577951308232
 #define RAYS 20
 
-char track_inner[] = "tracks/oval-inner.ch";
-char track_outer[] = "tracks/oval-outer.ch";
+//char track_inner[] = "tracks/oval-inner.ch";
+//char track_outer[] = "tracks/oval-outer.ch";
+//b2Vec2 start_position(240, 0);
 
-b2Vec2 start_position(240, 0);
+char track_inner[] = "tracks/track1-1.ch";
+char track_outer[] = "tracks/track1-2.ch";
+b2Vec2 start_position(-90, 0);
+
 
 using namespace nnlib;
 using namespace std;
@@ -171,6 +175,7 @@ void render(uint population, Network** networks){
 		view.zoom(0.2);
 		sf::View default_view = window.getView();
 		window.setView(view);
+		window.setFramerateLimit(60);
 
 		sf::Clock clock;
 		float passed = 0;

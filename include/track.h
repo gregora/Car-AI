@@ -16,6 +16,8 @@ class Track : public sf::Drawable, public sf::Transformable {
 		Track(b2World* world);
 
 		void loadChain(std::string path);
+		void setChain(b2Vec2* points, int edges);
+		void deleteChains();
 
 		float raycast(b2Vec2 position, b2Vec2 direction);
 
