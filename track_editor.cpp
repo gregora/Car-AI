@@ -16,6 +16,7 @@ int main(int argc, char** args){
 	int HEIGHT = 500;
 
 	char* name;
+	char* load = "\0";
 	int edges = 10;
 
 	for(int i = 0; i < argc; i++){
@@ -23,6 +24,8 @@ int main(int argc, char** args){
 			name = args[i + 1];
 		}else if(strcmp(args[i], "-points") == 0){
 			edges = atoi(args[i + 1]);
+		}else if(strcmp(args[i], "-load") == 0){
+			load = args[i + 1];
 		}
 	}
 
@@ -35,6 +38,36 @@ int main(int argc, char** args){
 	for(int i = 0; i < edges; i++){
 		points_inner[i] = b2Vec2(20 * sin(2*3.14 * i / edges), 20 * cos(2*3.14 * i / edges));
 		points_outer[i] = b2Vec2(30 * sin(- 2*3.14 * i / edges), 30 * cos(- 2*3.14 * i / edges));
+	}
+
+	if(load[0] != '\0'){
+
+		printf("%s\n", (string(load) + "-inner.ch").c_str());
+
+		string line;
+
+		std::ifstream file(string("tracks/") + string(load) + "-inner.ch");
+		int i = 0;
+		while (std::getline (file,line)){
+			int commapos = line.find(",");
+			float x = std::stof(line.substr(0, commapos));
+			float y = std::stof(line.substr(commapos + 1, line.length()));
+			points_inner[i].Set(x, y);
+			i++;
+		}
+		file.close();
+
+		std::ifstream file2(string("tracks/") + string(load) + "-outer.ch");
+		i = 0;
+		while (std::getline (file2,line)){
+			int commapos = line.find(",");
+			float x = std::stof(line.substr(0, commapos));
+			float y = std::stof(line.substr(commapos + 1, line.length()));
+			points_outer[i].Set(x, y);
+			i++;
+		}
+		file2.close();
+
 	}
 
 
