@@ -17,6 +17,8 @@ public:
 	float power = 150;
 	float turning = 40;
 
+	float max_lateral_impulse = 5;
+
 	PhysicsCar();
 	PhysicsCar(b2World* world, b2Vec2 position = b2Vec2(0.0f, 0.0f));
 

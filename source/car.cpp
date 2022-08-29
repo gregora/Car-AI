@@ -82,7 +82,7 @@ void PhysicsCar::applyLateralForces(){
 	b2Vec2 forwardVel = car -> GetLinearVelocity() - lateralVel;
 
 	b2Vec2 impulse = car -> GetMass() * -lateralVel;
-	float maxLateralImpulse = 0.5;
+	float maxLateralImpulse = max_lateral_impulse;
 
 
 	if (impulse.Length() > maxLateralImpulse){
