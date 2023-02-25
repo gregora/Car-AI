@@ -100,6 +100,72 @@ void Button::draw(sf::RenderTarget& target, sf::RenderStates states) const {
 
 }
 
+
+Bar::Bar(std::string name, float min, float max, bool horizontal){
+	this -> name = name;
+	this -> min = min;
+	this -> max = max;
+	this -> horizontal = horizontal;
+
+	if(!font.loadFromFile("fonts/Prototype.ttf")){
+		printf("WARNING: Gauge object could not load \"fonts/Prototype.ttf\"");
+	}
+
+}
+
+Bar::~Bar(){}
+
+void Bar::draw(sf::RenderTarget& target, sf::RenderStates states) const {
+
+	float bar_width = 200.0f;
+	float bar_height = 70.0f;
+
+	int font_size = 30;
+
+	sf::RectangleShape background(sf::Vector2f(bar_width, bar_height));
+	background.setFillColor(sf::Color(50, 50, 50, 255));
+
+
+	float value_width = bar_width * (value - min) / (max - min);
+	sf::RectangleShape bar(sf::Vector2f(value_width, bar_height));
+	bar.setFillColor(sf::Color(150, 150, 150, 255));
+	
+	sf::Text text;
+	text.setFont(font);
+	text.setFillColor(sf::Color(255, 255, 255));
+	text.setCharacterSize(font_size);
+	text.setString(name.c_str());
+	sf::FloatRect bounds = text.getLocalBounds();
+	text.setOrigin(bounds.width / 2, bounds.height / 2);
+
+	// Orient correctly if bar is not set to horizontal
+	if(!horizontal){
+		background.setOrigin(0, bar_height/2);
+		bar.setOrigin(0, bar_height/2);
+
+		background.rotate(90.0f);
+		bar.rotate(90.0f);
+
+		bar.setPosition(0, (bar_width - value_width) / 2);
+
+		text.setPosition(0, bar_width/2 + bounds.height);
+	}else{
+		bar.setPosition(- (bar_width - value_width) / 2, 0);
+		text.setPosition(-bar_width/2 - bounds.width, 0);
+	}
+
+	background.setOrigin(bar_width / 2, bar_height / 2);
+	bar.setOrigin(value_width / 2, bar_height / 2);
+
+
+	target.draw(background, states.transform*getTransform());
+	target.draw(bar, states.transform*getTransform());
+	target.draw(text, states.transform*getTransform());
+
+}
+
+
+
 FPS::FPS(){
 	c.restart();
 

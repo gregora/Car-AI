@@ -12,6 +12,15 @@ uint sample(Matrix& probabilites){
 
 	float sampled = nnlib::random();
 
+	float sum = 0;
+
+	for(uint ind = 0; ind < probabilites.height; ind++){
+		sum += probabilites.get(0, ind);
+	}
+
+	if(sum != 0)
+		probabilites = probabilites / sum; //normalize given vector
+
 	for(uint ind = 0; ind < probabilites.height; ind++){
 		sampled -= probabilites.get(0, ind);
 		if(sampled <= 0){
@@ -19,23 +28,17 @@ uint sample(Matrix& probabilites){
 		}
 	}
 
+	return 0;
 }
 
-uint action(Matrix& matrix){
+uint action(Matrix& probabilites, float epsilon){
 
 	float explore = nnlib::random();
-	if(explore >= 0.7){
-		return nnlib::random(0, matrix.height - 1);
+	if(explore >= epsilon){
+		return (int) min((double) nnlib::random(0, probabilites.height - 1), (double) probabilites.height - 1);
 	}
 
-
-	return sample(matrix);
-
-}
-
-uint action_max(Matrix& matrix){
-
-	return sample(matrix);
+	return sample(probabilites);
 
 }
 
@@ -68,6 +71,8 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 	sf::View view(sf::Vector2f(0, 0), sf::Vector2f(WIDTH / 2, HEIGHT / 2));
 	if(!training){
 		
+		window_ptr -> setFramerateLimit(60);
+
 		view.zoom(0.2);
 		sf::View default_view = window_ptr -> getView();
 		window_ptr -> setView(view);
@@ -99,6 +104,19 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 	b4.setScale(0.5, 0.5);
 	b4.setPosition(WIDTH - 240, HEIGHT - 50);
 
+	Bar bar1("W", 0, 1, false);
+	bar1.setScale(0.5, 0.5);
+	bar1.setPosition(50, HEIGHT - 80);
+	Bar bar2("A", 0, 1, false);
+	bar2.setScale(0.5, 0.5);
+	bar2.setPosition(95, HEIGHT - 80);
+	Bar bar3("S", 0, 1, false);
+	bar3.setScale(0.5, 0.5);
+	bar3.setPosition(140, HEIGHT - 80);
+	Bar bar4("D", 0, 1, false);
+	bar4.setScale(0.5, 0.5);
+	bar4.setPosition(185, HEIGHT - 80);
+
 	FPS fps;
 	fps.setPosition(WIDTH - 100, 20);
 	fps.setScale(0.5, 0.5);
@@ -106,10 +124,16 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 
 	while (true){
 
+		sf::Time delta = clock.restart();
+		float d = 1.0f / 60;
+
+
 		if(!training){
 			if(!window_ptr -> isOpen()){
 				break;
 			}
+
+			d = delta.asSeconds();			
 		}
 
 		float reward = 0;
@@ -123,19 +147,21 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 
 		c.castRays(t, RAYS, 100);
 
-		Matrix input(1, RAYS);
+		Matrix input(1, RAYS + 1);
 
 		for(uint i = 0; i < c.rays.size(); i++){
 			input.set(0, i, c.rays[i]);
 		}
 
+		input.set(0, RAYS, c.getSpeed());
+
 		Matrix output = network -> eval(input);
 
 		uint ind = 0;
 		if(training){
-			ind = action(output);
+			ind = action(output, 0.9f);
 		}else{
-			ind = action_max(output);
+			ind = action(output, 1.0f);
 		}
 
 		//printf("OUT: %f\n", output.get(0, ind));
@@ -155,13 +181,11 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 		if(ind == 0){
 			c.applyAction("w");
 			b1.active = true;
-			reward += 0.1;
 		}
 
 		if(ind == 1){
 			c.applyAction("a");
 			b2.active = true;
-			reward -= 0.1;
 
 
 		}
@@ -169,20 +193,19 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 		if(ind == 2){
 			c.applyAction("s");
 			b3.active = true;
-			reward -= 0.1;
 
 		}
 
 		if(ind == 3){
 			c.applyAction("d");
 			b4.active = true;
-			reward -= 0.1;
 
 		}
 
-		world.Step(1/60.0f, 2, 2);
+		world.Step(d, 2, 2);
 
-		reward = c.getForwardSpeed() / 60;
+
+		reward = c.getForwardSpeed() * d;
 
 		rewards.push_back(reward);
 
@@ -219,8 +242,10 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 
 		g.value = c.getSpeed() * 3.6;
 
-		sf::Time delta = clock.restart();
-		//float d = delta.asSeconds();
+		bar1.value = output.get(0, 0);
+		bar2.value = output.get(0, 1);
+		bar3.value = output.get(0, 2);
+		bar4.value = output.get(0, 3);
 
 		
 		if(!training){
@@ -243,6 +268,11 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 			window.draw(b2);
 			window.draw(b3);
 			window.draw(b4);
+
+			window.draw(bar1);
+			window.draw(bar2);
+			window.draw(bar3);
+			window.draw(bar4);
 
 			fps.update();
 			window.draw(fps);
@@ -271,7 +301,7 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 	}
 }
 
-void qlearn(Network* network){
+void reinforcement(Network* network){
 
 	float alpha = 0.999;
 	int training_period = 20;
@@ -283,6 +313,8 @@ void qlearn(Network* network){
 		vector<float> rewards;
 
 		episode(network, inputs, outputs, actions, rewards, e % training_period != 0);
+
+		vector<Matrix*> targets;
 
 		network -> save("networks/network" + std::to_string(e) + ".AI");
 
@@ -297,9 +329,26 @@ void qlearn(Network* network){
 			uint act = actions[i];
 
 			float val = outputs[i] -> get(0, act);
-			float target = reward > 0;
-			//float target = val + reward;
-			outputs[i] -> set(0, act, target);
+
+			uint n = outputs[i] -> height;
+			Matrix* target = new Matrix(1, n);
+
+			if(reward > 0){
+				target -> set(0, act, reward > 0);
+			}else {
+				for(uint i = 0; i < n; i++){
+					if(i != act){
+						target -> set(0, i, 1.0f / (n - 1));
+					}
+				}
+			}
+
+
+			targets.push_back(target);
+
+			//cout << reward << endl;
+			//cout << target -> serialize() << endl;
+
 
 		}
 
@@ -311,15 +360,15 @@ void qlearn(Network* network){
 		fit_settings settings = {
 			//backpropagation settings
 			epochs: 10,
-			batch_size: 1,
+			batch_size: outputs.size(),
 			speed: 0.001,
 			//output
-			output: "none",
+			output: "minimal",
 		};
 
 		if(e % training_period != 0){
 			printf("Training score: %f\n", c_reward);
-			fit(network, inputs, outputs, settings);
+			fit(network, inputs, targets, settings);
 		}else{
 			printf("Score: %f\n", c_reward);
 		}
@@ -328,6 +377,7 @@ void qlearn(Network* network){
 
 			delete outputs[i];
 			delete inputs[i];
+			delete targets[i];
 
 		}
 	}
@@ -337,17 +387,16 @@ void qlearn(Network* network){
 int main(){
 
 		Network network;
-		Dense* layer1 = new Dense(RAYS, 100);
-		Dense* layer2 = new Dense(100, 30);
-		Dense* layer3 = new Dense(30, 4);
+		Dense* layer1 = new Dense(RAYS + 1, 40);
+		Dense* layer3 = new Dense(40, 4);
 
 		layer1 -> setActivationFunction("relu");
-		layer2 -> setActivationFunction("relu");
+		//layer2 -> setActivationFunction("relu");
 		layer3 -> setActivationFunction("softmax");
 
 		network.addLayer(layer1);
-		network.addLayer(layer2);
+		//network.addLayer(layer2);
 		network.addLayer(layer3);
 
-		qlearn(&network);
+		reinforcement(&network);
 }

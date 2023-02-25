@@ -39,6 +39,24 @@ private:
 
 };
 
+class Bar : public sf::Drawable, public sf::Transformable {
+
+public:
+	Bar(std::string name = "", float min = 0, float max = 1, bool horizontal = true);
+	~Bar();
+
+	std::string name = "";
+	float min = 0;
+	float max = 1;
+	float value = 0.5;
+	bool horizontal = true;
+
+	void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
+private:
+	sf::Font font;
+};
+
 class FPS : public sf::Drawable, public sf::Transformable {
 
 public:
