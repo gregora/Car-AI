@@ -361,9 +361,9 @@ void reinforcement(Network* network){
 			//backpropagation settings
 			epochs: 10,
 			batch_size: outputs.size(),
-			speed: 0.001,
+			speed: 0.0001,
 			//output
-			output: "minimal",
+			output: "none",
 		};
 
 		if(e % training_period != 0){
@@ -391,7 +391,9 @@ int main(){
 		Dense* layer3 = new Dense(40, 4);
 
 		layer1 -> setActivationFunction("relu");
+		layer1 -> setErrorFunction("categoricalCrossentropy");
 		//layer2 -> setActivationFunction("relu");
+		layer3 -> setErrorFunction("categoricalCrossentropy");
 		layer3 -> setActivationFunction("softmax");
 
 		network.addLayer(layer1);
