@@ -34,3 +34,7 @@
 # Saved networks
 networks/*.AI
 networks/*/*.AI
+
+# Images for rendering
+render/*.png
+render/*.mp4

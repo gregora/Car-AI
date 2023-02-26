@@ -5,6 +5,9 @@
 #define RAD2DEG 57.29577951308232
 #define RAYS 20
 
+#define FULLSCREEN false
+#define RENDER false
+
 using namespace nnlib;
 using namespace std;
 
@@ -128,7 +131,7 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 		float d = 1.0f / 60;
 
 
-		if(!training){
+		if(!training && !RENDER){
 			if(!window_ptr -> isOpen()){
 				break;
 			}
@@ -275,8 +278,18 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 			window.draw(bar4);
 
 			fps.update();
-			window.draw(fps);
+			if(!RENDER){
+				window.draw(fps);
+			}
+
 			window.setView(view);
+
+			if(RENDER){
+				sf::Texture texture;
+				texture.create(window.getSize().x, window.getSize().y);
+				texture.update(window);
+				if (texture.copyToImage().saveToFile("render/" + to_string(frame) + ".png")){}
+			}
 
 			window.display();
 
@@ -285,7 +298,7 @@ void episode(Network* network, vector<Matrix*>& inputs, vector<Matrix*>& outputs
 			{
 				if (event.type == sf::Event::Closed){
 					window.close();
-					break;
+					return;
 				}
 			}
 		}
